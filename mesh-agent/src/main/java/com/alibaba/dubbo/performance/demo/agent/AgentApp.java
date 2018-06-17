@@ -1,6 +1,7 @@
 package com.alibaba.dubbo.performance.demo.agent;
 
-import org.springframework.boot.SpringApplication;
+import com.alibaba.dubbo.performance.demo.agent.agent.consumer.ConsumerServer;
+import com.alibaba.dubbo.performance.demo.agent.agent.provider.ProviderServer;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
@@ -11,7 +12,14 @@ public class AgentApp {
     // 添加日志保存目录: -Dlogs.dir=/path/to/your/logs/dir。请安装自己的环境来设置日志目录。
 
 
-    public static void main(String[] args) {
-        SpringApplication.run(AgentApp.class,args);
+    public static void main(String[] args) throws Exception {
+        int port = Integer.valueOf(System.getProperty("server.port"));
+        String type = System.getProperty("type");
+        if (type.equals("provider")) {
+            new ProviderServer().bind(port);
+        }
+        if (type.equals("consumer")) {
+            new ConsumerServer().bind(port);
+        }
     }
 }

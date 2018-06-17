@@ -18,4 +18,8 @@ public class RpcRequestHolder {
     public static void remove(String requestId){
         processingRpc.remove(requestId);
     }
+
+    public static int getSize() {
+        return processingRpc.size();
+    }
 }

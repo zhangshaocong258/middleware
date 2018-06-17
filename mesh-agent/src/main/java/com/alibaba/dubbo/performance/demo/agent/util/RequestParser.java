@@ -15,7 +15,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Created by zsc on 2018/6/15.
+ * Created by zsc on 2018/5/15.
  */
 public class RequestParser {
     private Logger logger = LoggerFactory.getLogger(RequestParser.class);
@@ -35,14 +35,14 @@ public class RequestParser {
     public void parse() throws IOException {
         HttpMethod method = fullHttpRequest.method();
         if (HttpMethod.GET == method) {
-            // 是GET请求
+            // GET请求
             QueryStringDecoder decoder = new QueryStringDecoder(fullHttpRequest.uri());
             decoder.parameters().entrySet().forEach( entry -> {
                 // entry.getValue()是一个List, 只取第一个元素
                 parmMap.put(entry.getKey(), entry.getValue().get(0));
             });
         } else if (HttpMethod.POST == method) {
-            // 是POST请求
+            // POST请求
             HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(fullHttpRequest);
             decoder.offer(fullHttpRequest);
 
@@ -56,7 +56,7 @@ public class RequestParser {
 
         } else {
             // 不支持其它方法
-            logger.error("不支持其他方法"); // 这是个自定义的异常, 可删掉这一行
+            logger.error("不支持其他方法");
         }
     }
 }
