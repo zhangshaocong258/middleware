@@ -13,7 +13,7 @@ public class ConsumerServerInitializer extends ChannelInitializer<SocketChannel>
     protected void initChannel(SocketChannel socketChannel) throws Exception {
         socketChannel.pipeline()
                 .addLast(new HttpServerCodec())
-                .addLast(new HttpObjectAggregator(65535))
+                .addLast(new HttpObjectAggregator(10*1024))
                 .addLast(new ConsumerServerHandler());
     }
 }

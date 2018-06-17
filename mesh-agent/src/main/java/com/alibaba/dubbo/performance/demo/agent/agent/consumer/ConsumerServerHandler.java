@@ -44,6 +44,7 @@ public class ConsumerServerHandler extends SimpleChannelInboundHandler<FullHttpR
         AgentFuture<MessageResponse> future = sendRequest("com.alibaba.dubbo.performance.demo.provider.IHelloService",messageRequest,channelHandlerContext);
         try {
             MessageResponse response = future.get();
+            logger.info("rrrrrrrrrrrresponse = future.get()");
             writeResponse(fullHttpRequest, fullHttpRequest, channelHandlerContext, (Integer) response.getResultDesc());
         } catch (Exception e) {
             FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST);
@@ -53,6 +54,7 @@ public class ConsumerServerHandler extends SimpleChannelInboundHandler<FullHttpR
     }
 
     private boolean writeResponse(HttpRequest request,HttpObject httpObject, ChannelHandlerContext ctx, int data) {
+        logger.info("wwwwwwwwwwwriteResponse");
         boolean keepAlive = HttpUtil.isKeepAlive(request);
         FullHttpResponse response = new DefaultFullHttpResponse(
                 HttpVersion.HTTP_1_1,
@@ -67,6 +69,7 @@ public class ConsumerServerHandler extends SimpleChannelInboundHandler<FullHttpR
         return keepAlive;
     }
     private AgentFuture<MessageResponse> sendRequest(String serviceName, MessageRequest request, ChannelHandlerContext channelHandlerContext) throws Exception {
+        logger.info("sssssssssssendRequest");
         final Channel channel = channelHandlerContext.channel();
         AgentFuture<MessageResponse> future = new AgentFuture<>();
         Holder.putRequest(request.getMessageId(), future);

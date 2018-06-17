@@ -43,6 +43,7 @@ public class ProviderServerHandler extends SimpleChannelInboundHandler<MessageRe
         RpcFuture future = invoke(channelHandlerContext, messageRequest);
         try {
             Integer result = JSON.parseObject((byte[]) future.get(), Integer.class);
+            logger.info("pppppffffffftureget");
             MessageResponse response = new MessageResponse(messageRequest.getMessageId(), result, endpoint, RpcRequestHolder.getSize());
             channelHandlerContext.writeAndFlush(response, channelHandlerContext.voidPromise());
         } catch (Exception e) {

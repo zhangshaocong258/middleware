@@ -22,7 +22,6 @@ public class RequestParser {
     private FullHttpRequest fullHttpRequest;
     Map<String, String> parmMap = new HashMap<>();
 
-    /** * 构造一个解析器 * @param req */
     public RequestParser(FullHttpRequest req) {
         this.fullHttpRequest = req;
     }
@@ -31,32 +30,16 @@ public class RequestParser {
         return parmMap;
     }
 
-    /** * 解析请求参数 * @return 包含所有请求参数的键值对, 如果没有参数, 则返回空Map * * @throws BaseCheckedException * @throws IOException */
     public void parse() throws IOException {
-        HttpMethod method = fullHttpRequest.method();
-        if (HttpMethod.GET == method) {
-            // GET请求
-            QueryStringDecoder decoder = new QueryStringDecoder(fullHttpRequest.uri());
-            decoder.parameters().entrySet().forEach( entry -> {
-                // entry.getValue()是一个List, 只取第一个元素
-                parmMap.put(entry.getKey(), entry.getValue().get(0));
-            });
-        } else if (HttpMethod.POST == method) {
-            // POST请求
-            HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(fullHttpRequest);
-            decoder.offer(fullHttpRequest);
+        HttpPostRequestDecoder decoder = new HttpPostRequestDecoder(fullHttpRequest);
+        decoder.offer(fullHttpRequest);
 
-            List<InterfaceHttpData> parmList = decoder.getBodyHttpDatas();
+        List<InterfaceHttpData> parmList = decoder.getBodyHttpDatas();
 
-            for (InterfaceHttpData parm : parmList) {
+        for (InterfaceHttpData parm : parmList) {
 
-                Attribute data = (Attribute) parm;
-                parmMap.put(data.getName(), data.getValue());
-            }
-
-        } else {
-            // 不支持其它方法
-            logger.error("不支持其他方法");
+            Attribute data = (Attribute) parm;
+            parmMap.put(data.getName(), data.getValue());
         }
     }
 }

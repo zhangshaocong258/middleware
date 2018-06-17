@@ -14,7 +14,6 @@ import io.netty.channel.epoll.EpollServerSocketChannel;
 
 public class ProviderServer {
     private static EtcdRegistry registry = new EtcdRegistry(System.getProperty("etcd.url"));
-
     public void bind(int port) throws Exception {
         EventLoopGroup bossGroup = new EpollEventLoopGroup(2);
         EventLoopGroup workerGroup = new EpollEventLoopGroup();
