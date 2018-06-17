@@ -35,7 +35,7 @@ public class MessageRequest implements Serializable{
         this.method = method;
         this.parameterTypesString = parameterTypesString;
         this.parameter = parameter;
-        this.endpoint = new Endpoint("",0);
+        this.endpoint = null;
         this.executingTask = 0;
 }
 
