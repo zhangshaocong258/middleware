@@ -8,6 +8,7 @@ import com.alibaba.dubbo.performance.demo.agent.registry.Endpoint;
 import com.alibaba.dubbo.performance.demo.agent.util.IdGenerator;
 import com.alibaba.dubbo.performance.demo.agent.util.LoadBalance;
 import com.alibaba.dubbo.performance.demo.agent.util.RequestParser;
+import com.alibaba.dubbo.performance.demo.agent.util.WaitService;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.buffer.Unpooled;
@@ -42,15 +43,19 @@ public class ConsumerServerHandler extends SimpleChannelInboundHandler<FullHttpR
                 requestParser.getParmMap().get("parameter")
         );
         AgentFuture<MessageResponse> future = sendRequest("com.alibaba.dubbo.performance.demo.provider.IHelloService",messageRequest,channelHandlerContext);
-        try {
-            MessageResponse response = future.get();
-            logger.info("rrrrrrrrrrrresponse = future.get()");
-            writeResponse(fullHttpRequest, fullHttpRequest, channelHandlerContext, (Integer) response.getResultDesc());
-        } catch (Exception e) {
-            FullHttpResponse response = new DefaultFullHttpResponse(HttpVersion.HTTP_1_1, HttpResponseStatus.BAD_REQUEST);
-            channelHandlerContext.writeAndFlush(response);
-            e.printStackTrace();
-        }
+        Runnable callback = () -> {
+            try {
+                MessageResponse response = future.get();
+                writeResponse(fullHttpRequest,fullHttpRequest,channelHandlerContext, (Integer) response.getResultDesc());
+            } catch (Exception e) {
+                FullHttpResponse response = new DefaultFullHttpResponse(
+                        HttpVersion.HTTP_1_1,HttpResponseStatus.BAD_REQUEST
+                );
+                channelHandlerContext.writeAndFlush(response);
+                e.printStackTrace();
+            }
+        };
+        WaitService.execute(callback);
     }
 
     private boolean writeResponse(HttpRequest request,HttpObject httpObject, ChannelHandlerContext ctx, int data) {

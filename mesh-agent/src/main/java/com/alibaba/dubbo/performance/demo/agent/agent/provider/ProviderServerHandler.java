@@ -10,6 +10,7 @@ import com.alibaba.dubbo.performance.demo.agent.dubbo.RpcClientInitializer;
 import com.alibaba.dubbo.performance.demo.agent.dubbo.model.*;
 import com.alibaba.dubbo.performance.demo.agent.registry.Endpoint;
 import com.alibaba.dubbo.performance.demo.agent.registry.IpHelper;
+import com.alibaba.dubbo.performance.demo.agent.util.WaitService;
 import com.alibaba.fastjson.JSON;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
@@ -41,15 +42,17 @@ public class ProviderServerHandler extends SimpleChannelInboundHandler<MessageRe
     @Override
     protected void channelRead0(ChannelHandlerContext channelHandlerContext, MessageRequest messageRequest) throws Exception {
         RpcFuture future = invoke(channelHandlerContext, messageRequest);
-        try {
-            Integer result = JSON.parseObject((byte[]) future.get(), Integer.class);
-            logger.info("pppppffffffftureget");
-            MessageResponse response = new MessageResponse(messageRequest.getMessageId(), result, endpoint, RpcRequestHolder.getSize());
-            channelHandlerContext.writeAndFlush(response, channelHandlerContext.voidPromise());
-        } catch (Exception e) {
-            channelHandlerContext.writeAndFlush(new MessageResponse(messageRequest.getMessageId(), "-1", endpoint, RpcRequestHolder.getSize()));
-            e.printStackTrace();
-        }
+        Runnable callable = () -> {
+            try {
+                Integer result = JSON.parseObject((byte[]) future.get(),Integer.class);
+                MessageResponse response = new MessageResponse(messageRequest.getMessageId(),result,endpoint,RpcRequestHolder.getSize());
+                channelHandlerContext.writeAndFlush(response,channelHandlerContext.voidPromise());
+            } catch (Exception e) {
+                channelHandlerContext.writeAndFlush(new MessageResponse(messageRequest.getMessageId(),"-1",endpoint,RpcRequestHolder.getSize()));
+                e.printStackTrace();
+            }
+        };
+        WaitService.execute(callable);
     }
 
     @Override

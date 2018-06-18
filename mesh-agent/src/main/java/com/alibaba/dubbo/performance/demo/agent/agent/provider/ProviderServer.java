@@ -4,6 +4,7 @@ package com.alibaba.dubbo.performance.demo.agent.agent.provider;
  */
 
 import com.alibaba.dubbo.performance.demo.agent.registry.EtcdRegistry;
+import com.alibaba.dubbo.performance.demo.agent.util.WaitService;
 import io.netty.bootstrap.ServerBootstrap;
 import io.netty.buffer.PooledByteBufAllocator;
 import io.netty.channel.ChannelFuture;
@@ -15,6 +16,7 @@ import io.netty.channel.epoll.EpollServerSocketChannel;
 public class ProviderServer {
     private static EtcdRegistry registry = new EtcdRegistry(System.getProperty("etcd.url"));
     public void bind(int port) throws Exception {
+        WaitService.init();
         EventLoopGroup bossGroup = new EpollEventLoopGroup(2);
         EventLoopGroup workerGroup = new EpollEventLoopGroup();
         try {
